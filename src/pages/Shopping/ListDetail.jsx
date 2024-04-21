@@ -58,9 +58,11 @@ const ListDetail = () => {
   };
 
   const deleteHandler = e => {
-    dispatch(removeList(listId));
-    toast.success("List deleted successfully");
-    navigate("/");
+    if (window.confirm("Do you want to remove this list?")) {
+      dispatch(removeList(listId));
+      toast.success("List deleted successfully");
+      navigate("/");
+    }
   };
 
   const handleNewItemChange = e => setNewItem({ ...newItem, [e.target.name]: e.target.value });

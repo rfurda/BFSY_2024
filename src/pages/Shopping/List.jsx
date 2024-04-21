@@ -21,6 +21,7 @@ import { toast } from "sonner";
 
 const List = () => {
   const dispatch = useDispatch();
+  const [query, setQuery] = useState("all");
   const { lists } = useSelector(({ lists }) => lists);
   const { userinfo } = useSelector(({ auth }) => auth);
   const [newData, setNewData] = useState({ name: "", archived: false, owner: userinfo._id });
@@ -71,27 +72,30 @@ const List = () => {
           </DialogContent>
         </Dialog>
 
-        <Select>
-          <SelectTrigger className="rounded-full text-center w-full">
-            <SelectValue placeholder="View" />
+        <Select onValueChange={value => setQuery(value)}>
+          <SelectTrigger className="rounded-full text-center">
+            <SelectValue placeholder="Show all" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Show all</SelectItem>
-            <SelectItem value="true">Archived</SelectItem>
             <SelectItem value="false">Active</SelectItem>
+            <SelectItem value="true">Archived</SelectItem>
           </SelectContent>
         </Select>
-
-        <Input type="search" placeholder="Search by name..." className="w-full rounded-full" />
       </div>
 
       {lists?.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border p-4 rounded-md">
           {lists.map(
             list =>
-              (list?.members.includes(userinfo._id) || list.owner === userinfo._id) && (
-                <ListView key={list._id} list={list} />
-              )
+              (list?.members.includes(userinfo._id) || list.owner === userinfo._id) &&
+              (query === "all" ? (
+                <ListView key={list._id} list={list} userinfo={userinfo} />
+              ) : query === "true" ? (
+                list.archived && <ListView key={list._id} list={list} userinfo={userinfo} />
+              ) : (
+                !list.archived && <ListView key={list._id} list={list} userinfo={userinfo} />
+              ))
           )}
         </div>
       ) : (
